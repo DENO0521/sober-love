@@ -104,7 +104,23 @@
   .empty{color:var(--sub);font-size:13px;font-style:italic}
   button.print{display:block;margin:24px auto 0;padding:10px 28px;border:none;border-radius:10px;background:var(--accent);color:#fff;font-size:14px;font-weight:600;cursor:pointer}
   button.print:hover{opacity:.9}
-  @media print{.no-print{display:none}body{background:#fff}}
+  @media print{
+    .no-print{display:none!important}
+    .print-skip{display:none!important}
+    #printHeader{display:block!important}
+    body{background:#fff}
+    .grid{grid-template-columns:1fr}
+    .grid > div:first-child{display:none!important} /* 打印时隐藏左侧输入区 */
+  }
+  #printHeader{display:none;text-align:center;margin-bottom:18px}
+  #printHeader h2{font-size:20px}
+  #printHeader #printMeta{color:var(--sub);font-size:13px;margin-top:6px}
+  .export-bar{max-width:640px;margin:26px auto 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px}
+  .export-title{font-size:13px;font-weight:700;margin-bottom:8px}
+  .export-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 16px}
+  @media(max-width:560px){.export-grid{grid-template-columns:1fr}}
+  .export-grid label{display:flex;gap:7px;align-items:center;font-size:12.5px;color:var(--sub);padding:4px 0;cursor:pointer}
+  .export-grid input{accent-color:var(--accent)}
 </style>
 </head>
 <body>
@@ -168,7 +184,7 @@
 
     <!-- ============ RIGHT: RESULTS ============ -->
     <div>
-      <div class="card">
+      <div class="card" id="card-verdict">
         <h2><span class="num">❶</span>一句话结论 & 关系可靠度</h2>
         <div class="r-hero">
           <div class="r-num" id="rNum">--<small> / 100</small></div>
@@ -179,12 +195,12 @@
         <div id="bars" style="margin-top:14px"></div>
       </div>
 
-      <div class="card">
+      <div class="card" id="card-struct">
         <h2><span class="num">❷</span>结构性风险检查</h2>
         <div class="tags" id="structTags"></div>
       </div>
 
-      <div class="card">
+      <div class="card" id="card-character">
         <h2><span class="num">❸</span>人品 / 诚信单独判断</h2>
         <div class="pill4">
           <div class="pill"><div class="k">诚信（T）</div><div class="lv" id="jT">-</div></div>
@@ -195,28 +211,28 @@
         <div class="support" id="support"></div>
       </div>
 
-      <div class="card">
+      <div class="card" id="card-risks">
         <h2><span class="num">❹</span>最危险的三个指标</h2>
         <div id="topRisks"></div>
       </div>
 
-      <div class="card">
+      <div class="card" id="card-fake">
         <h2><span class="num">❺</span>假性高分检查</h2>
         <div id="fakeCheck"></div>
       </div>
 
-      <div class="card">
+      <div class="card" id="card-strategy">
         <h2><span class="num">❻</span>行动方案（四选一战略）</h2>
         <div class="strategy-banner" id="strategyBanner"></div>
         <div id="strategyBody"></div>
       </div>
 
-      <div class="card">
+      <div class="card" id="card-verify">
         <h2><span class="num">❼</span>下一阶段验证任务（正常真实互动，不试探不钓鱼）</h2>
         <ul class="plan" id="verifyTasks"></ul>
       </div>
 
-      <div class="card">
+      <div class="card" id="card-evidence">
         <h2><span class="num">❽</span>什么证据可以改变结论</h2>
         <div class="two-col">
           <div class="mini up"><h4>▲ 出现以下证据，提高判断</h4><ul id="upList"></ul></div>
@@ -226,7 +242,25 @@
       </div>
     </div>
   </div>
-  <button class="print no-print" onclick="window.print()">打印 / 导出 PDF 报告</button>
+  <div class="export-bar no-print">
+    <div class="export-title">📄 导出 PDF 内容自选（只勾选你想保留在报告里的模块）</div>
+    <div class="export-grid">
+      <label><input type="checkbox" data-card="printHeader" checked>报告头（日期 / 观察时间 / 关系阶段）</label>
+      <label><input type="checkbox" data-card="card-verdict" checked>❶ 一句话结论 & R值</label>
+      <label><input type="checkbox" data-card="card-struct" checked>❷ 结构性风险检查</label>
+      <label><input type="checkbox" data-card="card-character">❸ 人品 / 诚信判断</label>
+      <label><input type="checkbox" data-card="card-risks">❹ 三大危险指标</label>
+      <label><input type="checkbox" data-card="card-fake">❺ 假性高分检查</label>
+      <label><input type="checkbox" data-card="card-strategy" checked>❻ 行动方案</label>
+      <label><input type="checkbox" data-card="card-verify" checked>❼ 验证任务</label>
+      <label><input type="checkbox" data-card="card-evidence">❽ 结论修正证据</label>
+    </div>
+  </div>
+  <button class="print no-print" id="btnPrint">打印 / 导出 PDF 报告</button>
+  <div id="printHeader">
+    <h2>关系可靠性与发展决策报告</h2>
+    <div id="printMeta"></div>
+  </div>
 </div>
 
 <script>
@@ -518,6 +552,25 @@ function compute(){
   ].map(t=>`<li>${t}</li>`).join('');
 }
 compute();
+
+// ===== 选择性导出 PDF =====
+$('btnPrint').addEventListener('click', ()=>{
+  const skipped = [];
+  document.querySelectorAll('.export-bar input[type=checkbox]').forEach(cb=>{
+    const el = document.getElementById(cb.dataset.card);
+    if(!el) return;
+    if(!cb.checked){ el.classList.add('print-skip'); skipped.push(el); }
+    else{ el.classList.remove('print-skip'); }
+  });
+  // 填充报告头
+  const obs = $('obsTime').value.trim() || '未填写';
+  const stg = $('stage').value;
+  const nxt = $('nextStep').value.trim() || '未填写';
+  const today = new Date().toLocaleDateString('zh-CN', {year:'numeric',month:'long',day:'numeric'});
+  $('printMeta').textContent = `生成日期：${today} ｜ 观察时间：${obs} ｜ 关系阶段：${stg} ｜ 考虑的下一步：${nxt}`;
+  window.print();
+  skipped.forEach(el=>el.classList.remove('print-skip'));
+});
 </script>
 </body>
 </html>
