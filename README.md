@@ -1,7 +1,7 @@
-# Sober Love · 清醒恋爱
+# Sober Love · 清醒恋爱 × 及时止损测算器
 
-> **行为证据 ＞ 语言解释 ＞ 主观感受。**
-> Actions speak. Words explain. Feelings just wish.
+> **行为证据 ＞ 语言解释 ＞ 主观感受。该止损时，不加仓。**
+> Actions speak. Words explain. Feelings just wish. Cut your losses in time.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Online Demo](https://img.shields.io/badge/🌐_在线使用-Sober_Love-3b5bdb)](https://deno0521.github.io/sober-love/)
@@ -57,7 +57,23 @@ Sober Love 是一个给关系「做体检」的小工具：回答 30 个可以�
 
 六项参数加权：**R = 0.25·A行动 + 0.25·T信任 + 0.15·C连接 + 0.15·P互惠 + 0.10·S信噪比 + 0.10·(100−H不确定性)**
 
-但总分从不是结论——结构性风险检查与硬性红旗机制拥有更高优先级。完整规则见 [模型文档](#)（页面内各模块均有说明）。
+但总分从不是结论——结构性风险检查与硬性红旗机制拥有更高优先级。
+
+### 📐 理论基础：用六个学科的公式防渣
+
+每个参数背后都有一个学科模型撑腰（完整推导、变量说明与 LaTeX 见 [THEORY.md](THEORY.md)）：
+
+| 参数 | 学科包装 | 公式 | 人话解读 |
+|------|---------|------|---------|
+| A 行动持续度 | 微积分 | f′(t)≫0, f″(t)≪0 | 警惕没有长期沉淀的突然繁荣 |
+| T 信任度 | 贝叶斯 | P(A\|B)=P(B\|A)P(A)/P(B) | 信任随证据更新，不靠初始印象死扛 |
+| C 现实连接度 | 图论 | Connectivity(A,B)≈0 | 不让你进入真实社交圈 = 两张网零连接 |
+| P 关系收益度 | 博弈论 | Σ Payoff_you < 0 | 长期负收益就该止损，而不是加码 |
+| S 信噪比 | 信息论 | SNR = Signal/Noise → 0 | 行动是信号，话术是噪音 |
+| H 不确定性 | 信息论 | Entropy → ∞ | 反复无常 = 高熵 |
+| R 综合可靠度 | 综合公式 | R=(∫Action/Noise)×(Connectivity/Entropy) | 落地为本工具的加权评分清单 |
+
+> ⚠️ 诚实声明：除贝叶斯定理等基本形式外，这些「公式」是启发式观察框架，不是经过验证的心理学诊断工具——我们把它们改造成了可验证的问题清单，而不是假装在算一个精确数值。
 
 ## 隐私
 
@@ -97,6 +113,10 @@ Feelings lie. Evidence doesn't. When you can't tell "he's genuinely busy" from "
 ### Anti-bias design
 
 Three-layer anchoring keeps self-deception visible: behavioral anchors per score band → evidence-based reference scores → automatic drift alerts when your input deviates ±15 from what the evidence supports.
+
+### Theory
+
+Each dimension is grounded in a classic model — calculus (investment derivative), Bayes (trust updating), graph theory (social connectivity), game theory (cumulative payoff), information theory (SNR & entropy) — honestly labeled as heuristic observation frameworks, not validated psychology. Full derivations & LaTeX in [THEORY.md](THEORY.md).
 
 ### Tech
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>关系可靠性与发展决策模型</title>
+<title>清醒恋爱 × 及时止损测算器 ｜ Sober Love</title>
 <style>
   :root{
     --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d23; --sub:#6b7280; --line:#e5e7eb;
@@ -121,15 +121,41 @@
   @media(max-width:560px){.export-grid{grid-template-columns:1fr}}
   .export-grid label{display:flex;gap:7px;align-items:center;font-size:12.5px;color:var(--sub);padding:4px 0;cursor:pointer}
   .export-grid input{accent-color:var(--accent)}
+  .h1-x{color:var(--accent);font-weight:400}
+  .theory{max-width:1080px;margin:0 auto 20px}
+  .theory summary{cursor:pointer;font-weight:700;font-size:15px;list-style:none}
+  .theory summary::-webkit-details-marker{display:none}
+  .theory summary:hover{color:var(--accent)}
+  .t-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  @media(max-width:760px){.t-grid{grid-template-columns:1fr}}
+  .t-row{background:#f8f9fb;border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .t-subj{font-size:13px;font-weight:700;color:var(--accent)}
+  .t-formula{font-family:"SF Mono",Consolas,monospace;font-size:13px;margin:6px 0;background:#fff;border:1px dashed var(--line);border-radius:6px;padding:6px 10px;overflow-x:auto}
+  .t-plain{font-size:12.5px;color:var(--ink)}
+  .t-map{font-size:11.5px;color:var(--sub);margin-top:6px;font-weight:600}
+  .t-rigor{margin-top:14px;font-size:12px;color:var(--sub);background:#fff8e6;border:1px solid #ffe0a3;border-radius:8px;padding:10px 12px}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>关系可靠性与发展决策模型</h1>
-    <p>基于客观参数的关系可靠度 · 诚信风险 · 长期价值评估工具</p>
+    <h1>清醒恋爱 <span class="h1-x">×</span> 及时止损测算器</h1>
+    <p>关系可靠性与发展决策模型：6 个维度，用证据给关系定价，该止损时不加仓</p>
     <div class="principle">核心原则：行为证据 ＞ 语言解释 ＞ 主观感受</div>
   </header>
+
+  <details class="card theory">
+    <summary>📐 底层原理：6 个公式看透一段关系（点击展开）</summary>
+    <div class="t-grid">
+      <div class="t-row"><div class="t-subj">微积分 · 投入函数</div><div class="t-formula">f′(t) ≫ 0，f″(t) ≪ 0</div><div class="t-plain">警惕没有长期沉淀的突然繁荣：前期热烈、随后断崖式撤回的投入曲线，本身就是信号。</div><div class="t-map">→ 参数 A｜长期行动持续度</div></div>
+      <div class="t-row"><div class="t-subj">贝叶斯 · 信任更新</div><div class="t-formula">P(A|B) = P(B|A)·P(A) / P(B)</div><div class="t-plain">信任不是初始印象，是会随证据更新的概率：出现说谎、失联等证据后，按证据强弱重新定价。</div><div class="t-map">→ 参数 T｜证据更新后的信任度</div></div>
+      <div class="t-row"><div class="t-subj">图论 · 社交连通</div><div class="t-formula">Connectivity(A,B) ≈ 0</div><div class="t-plain">把你和 TA 的亲友同事看作两张网：TA 长期不让你进入真实社交圈，两张网之间几乎没有跨群连接。</div><div class="t-map">→ 参数 C｜现实连接度</div></div>
+      <div class="t-row"><div class="t-subj">博弈论 · 收益汇总</div><div class="t-formula">Σ Payoff<sub>you</sub> &lt; 0</div><div class="t-plain">长期单向付出、累计收益为负时，正确动作是设边界、降投入、必要时退出——而不是加码换合作。</div><div class="t-map">→ 参数 P｜关系长期收益度</div></div>
+      <div class="t-row"><div class="t-subj">信息论 · 信噪比与熵</div><div class="t-formula">SNR = Signal/Noise → 0；Entropy → ∞</div><div class="t-plain">可验证的行动是信号，话术承诺是噪音；噪音淹没行动时调低权重，反复无常按高熵处理。</div><div class="t-map">→ 参数 S｜行动信噪比 · H｜行为不确定性</div></div>
+      <div class="t-row"><div class="t-subj">综合 · 可靠度公式</div><div class="t-formula">R = (∫Action(t)dt / Noise) × (Connectivity / Entropy)</div><div class="t-plain">行动与连通越高越好，噪声与熵越高越差。本工具把它落地为上方六项参数的加权评分清单。</div><div class="t-map">→ 最终输出 R｜关系可靠度</div></div>
+    </div>
+    <div class="t-rigor">⚠️ 严谨性声明：以上公式除贝叶斯定理、SNR 等基本形式外，多为启发式/修辞性表达，并非经过验证的心理学诊断工具。本工具不计算它们的精确数值，而是将其改造为「可验证问题清单」使用——请把它们当作观察框架，而不是判决书。</div>
+  </details>
 
   <div class="grid">
     <!-- ============ LEFT: INPUTS ============ -->
