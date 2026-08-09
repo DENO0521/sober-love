@@ -23,6 +23,21 @@ Sober Love 是一个给关系「做体检」的小工具：回答 30 个可以�
 
 不安慰你，不替你找借口，不评价好人坏人。只处理证据。
 
+## 为什么做这个工具？
+
+因为大多数关系建议都坏在同一个地方：**它们问的是你的感受，而不是对方的行为。**
+
+「你觉得 TA 爱你吗？」——这个问题没有答案，只有情绪。而「过去 30 天，TA 的承诺兑现了几件？」有答案，可以验证，无法自欺欺人。
+
+这个工具做的事，就是把后者系统化：
+
+- **把模糊的不安翻译成可验证的问题**——"我觉得 TA 在疏远我" → "与关系早期相比，TA 的行动投入有没有明显下降？"
+- **把单次事件放进时间轴**——一次暖心举动说明不了什么，90 天的投入曲线才说明问题
+- **把「再给他一次机会」变成明确的验证任务**——机会不是不可以给，但要有期限、有指标、有退出线
+- **把止损从情绪决定变成风控决定**——亏到止损线就执行，不讨价还价
+
+它不是让你变得冷漠，而是让你在投入真心之前，先确认对方值得。
+
 ---
 
 ## 不废话，直接上公式
@@ -140,34 +155,63 @@ cd sober-love
 
 ## English
 
-**Sober Love** is a single-file web tool that scores your relationship with *evidence* instead of feelings.
+**Sober Love** is a single-file web tool that scores your relationship with *evidence* instead of feelings — and tells you exactly when to cut your losses.
 
 **[🌐 Try it online](https://deno0521.github.io/sober-love/)** — no signup, no backend, your data never leaves your browser.
 
-### Why
+### The moments it was built for
 
-Feelings lie. Evidence doesn't. When you can't tell "he's genuinely busy" from "he's fading away", you need a framework that forces you to separate what *happened* from what you *hope*.
+- They say "I've been busy lately" — genuinely busy, or quietly fading? You can't tell.
+- Every word they say is moving, yet looking back, nothing actually *happened*.
+- A friend asks "do they treat you well?" You say "sure" — then can't name three examples.
 
-### How it works
+Feelings lie. Evidence doesn't.
 
-1. Answer 30 yes/no evidence-based questions across 6 dimensions (Actions, Trust, Connection, Payoff, Signal-to-noise, Entropy)
-2. Get a weighted reliability score **R (0–100)** with full calculation breakdown
-3. Structural risk checks override the total — a 70 average can't hide a 20 in Trust
-4. Confirmed dealbreakers (major lies, hidden partner, manipulation, threats) trigger an immediate stop recommendation — never diluted by averages
-5. Receive one of four action strategies (Proceed / Slow down / Observe / Stop) plus up to 3 concrete verification tasks for the next 30 days
-6. Selectively export modules to PDF for your records
+### The six formulas (yes, real math)
+
+Each dimension of your relationship is mapped to a classic model, with worked examples inside the tool:
+
+| Dimension | Model | Question it answers |
+|-----------|-------|--------------------|
+| **A** Action consistency | Calculus — investment derivative $f'(t), f''(t)$ | Is the effort curve sustainable or a cliff? |
+| **T** Trust | Bayes' theorem $P(A\mid B)$ | Does the *evidence* still justify belief? |
+| **C** Real-world connection | Graph theory — connectivity | Are you inside their actual life? |
+| **P** Payoff balance | Game theory — $\sum \text{Payoff}_{you}$ | Is this reciprocal or a negative-sum drain? |
+| **S** Signal-to-noise | Information theory — SNR | Do actions outweigh words? |
+| **H** Entropy | Information theory — entropy | Is their behavior predictable? |
+
+Composite output: $R = 0.25A + 0.25T + 0.15C + 0.15P + 0.10S + 0.10(100-H)$ — with structural risk checks that override the average. Honest note: apart from Bayes and SNR basics, these are heuristic observation frameworks, not validated psychological diagnostics. We turn them into verifiable question checklists instead of pretending to compute exact truth. Full derivations & LaTeX in [THEORY.md](THEORY.md).
+
+### What you get
+
+1. **A one-line verdict** — five levels, no hedging: proceed / slow down / observe / pause / trust broken
+2. **Reliability score R (0–100)** with the full calculation shown
+3. **Structural risk alerts** — a 70 average can't hide a 20 in Trust
+4. **Top-3 risk ranking** — why each matters, no excuses made for anyone
+5. **Fake-high detection** — "treats me well but keeps their real life hidden" gets caught automatically
+6. **Hard dealbreaker override** — confirmed major lies, hidden partners, manipulation, threats: immediate stop, never diluted by averages
+7. **Up to 3 verification tasks** for the next 30 days — all through normal interaction; no snooping, no traps, no tests
+8. **Selective PDF export** — your report, your choice of modules
 
 ### Anti-bias design
 
-Three-layer anchoring keeps self-deception visible: behavioral anchors per score band → evidence-based reference scores → automatic drift alerts when your input deviates ±15 from what the evidence supports.
+Scoring your own relationship is biased by definition. Three-layer anchoring keeps self-deception visible: **behavioral anchors** per score band → **evidence-based reference scores** from 30 yes/no questions → **automatic drift alerts** when your input deviates ±15 from what the evidence supports, with "your R" and "evidence R" shown side by side.
 
-### Theory
+The tool can't eliminate bias. It makes bias impossible to hide.
 
-Each dimension is grounded in a classic model — calculus (investment derivative), Bayes (trust updating), graph theory (social connectivity), game theory (cumulative payoff), information theory (SNR & entropy) — honestly labeled as heuristic observation frameworks, not validated psychology. Full derivations & LaTeX in [THEORY.md](THEORY.md).
+### Privacy
 
-### Tech
+Zero backend, zero tracking, zero network requests. Everything is computed in your browser and gone when you close the tab — the details of your relationship were never meant to be uploaded to anyone.
 
-Zero dependencies. Zero build step. One `index.html`. Fork it, remix it, make it yours.
+### Run locally / Remix
+
+```bash
+git clone https://github.com/DENO0521/sober-love.git
+cd sober-love
+# open index.html in any browser — no build step
+```
+
+Zero dependencies. One `index.html`. Fork it, remix it, make it yours.
 
 ---
 
