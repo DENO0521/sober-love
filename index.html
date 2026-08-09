@@ -132,6 +132,7 @@
   .t-subj{font-size:13px;font-weight:700;color:var(--accent)}
   .t-formula{font-family:"SF Mono",Consolas,monospace;font-size:13px;margin:6px 0;background:#fff;border:1px dashed var(--line);border-radius:6px;padding:6px 10px;overflow-x:auto}
   .t-plain{font-size:12.5px;color:var(--ink)}
+  .t-example{font-size:12px;color:#7c5c10;background:#fff8e6;border-radius:6px;padding:6px 10px;margin-top:8px;line-height:1.6}
   .t-map{font-size:11.5px;color:var(--sub);margin-top:6px;font-weight:600}
   .t-rigor{margin-top:14px;font-size:12px;color:var(--sub);background:#fff8e6;border:1px solid #ffe0a3;border-radius:8px;padding:10px 12px}
 </style>
@@ -147,12 +148,12 @@
   <details class="card theory">
     <summary>📐 底层原理：6 个公式看透一段关系（点击展开）</summary>
     <div class="t-grid">
-      <div class="t-row"><div class="t-subj">微积分 · 投入函数</div><div class="t-formula">f′(t) ≫ 0，f″(t) ≪ 0</div><div class="t-plain">警惕没有长期沉淀的突然繁荣：前期热烈、随后断崖式撤回的投入曲线，本身就是信号。</div><div class="t-map">→ 参数 A｜长期行动持续度</div></div>
-      <div class="t-row"><div class="t-subj">贝叶斯 · 信任更新</div><div class="t-formula">P(A|B) = P(B|A)·P(A) / P(B)</div><div class="t-plain">信任不是初始印象，是会随证据更新的概率：出现说谎、失联等证据后，按证据强弱重新定价。</div><div class="t-map">→ 参数 T｜证据更新后的信任度</div></div>
-      <div class="t-row"><div class="t-subj">图论 · 社交连通</div><div class="t-formula">Connectivity(A,B) ≈ 0</div><div class="t-plain">把你和 TA 的亲友同事看作两张网：TA 长期不让你进入真实社交圈，两张网之间几乎没有跨群连接。</div><div class="t-map">→ 参数 C｜现实连接度</div></div>
-      <div class="t-row"><div class="t-subj">博弈论 · 收益汇总</div><div class="t-formula">Σ Payoff<sub>you</sub> &lt; 0</div><div class="t-plain">长期单向付出、累计收益为负时，正确动作是设边界、降投入、必要时退出——而不是加码换合作。</div><div class="t-map">→ 参数 P｜关系长期收益度</div></div>
-      <div class="t-row"><div class="t-subj">信息论 · 信噪比与熵</div><div class="t-formula">SNR = Signal/Noise → 0；Entropy → ∞</div><div class="t-plain">可验证的行动是信号，话术承诺是噪音；噪音淹没行动时调低权重，反复无常按高熵处理。</div><div class="t-map">→ 参数 S｜行动信噪比 · H｜行为不确定性</div></div>
-      <div class="t-row"><div class="t-subj">综合 · 可靠度公式</div><div class="t-formula">R = (∫Action(t)dt / Noise) × (Connectivity / Entropy)</div><div class="t-plain">行动与连通越高越好，噪声与熵越高越差。本工具把它落地为上方六项参数的加权评分清单。</div><div class="t-map">→ 最终输出 R｜关系可靠度</div></div>
+      <div class="t-row"><div class="t-subj">微积分 · 投入函数</div><div class="t-formula">f′(t) ≫ 0，f″(t) ≪ 0</div><div class="t-plain">警惕没有长期沉淀的突然繁荣：前期热烈、随后断崖式撤回的投入曲线，本身就是信号。</div><div class="t-example">📌 算例：前两周每天主动聊 3 小时（f′≫0）→ 第三周隔天回 → 第五周只剩「嗯」「哈哈」。峰值很高，但二阶导早已转负——看斜率，不看峰值。</div><div class="t-map">→ 参数 A｜长期行动持续度</div></div>
+      <div class="t-row"><div class="t-subj">贝叶斯 · 信任更新</div><div class="t-formula">P(A|B) = P(B|A)·P(A) / P(B)</div><div class="t-plain">信任不是初始印象，是会随证据更新的概率：出现说谎、失联等证据后，按证据强弱重新定价。</div><div class="t-example">📌 算例：先验 P(可靠)=0.8；B=「被证实重大撒谎」，设 P(B|可靠)=0.05、P(B|不可靠)=0.6，则 P(B)=0.16，后验 P(可靠|B)=0.04/0.16=<b>0.25</b>。一次实锤，80%→25%。「我选择相信 TA」不是善意，是拒绝更新后验。</div><div class="t-map">→ 参数 T｜证据更新后的信任度</div></div>
+      <div class="t-row"><div class="t-subj">图论 · 社交连通</div><div class="t-formula">Connectivity(A,B) ≈ 0</div><div class="t-plain">把你和 TA 的亲友同事看作两张网：TA 长期不让你进入真实社交圈，两张网之间几乎没有跨群连接。</div><div class="t-example">📌 算例：交往 6 个月，跨群边数 = 0（没见过 TA 任何朋友/同事/家人，TA 也回避见你的）。健康基准是稳定交往 3 个月应有 ≥2 条跨群边。0 条不是「慢热」，是隔离。</div><div class="t-map">→ 参数 C｜现实连接度</div></div>
+      <div class="t-row"><div class="t-subj">博弈论 · 收益汇总</div><div class="t-formula">Σ Payoff<sub>you</sub> &lt; 0</div><div class="t-plain">长期单向付出、累计收益为负时，正确动作是设边界、降投入、必要时退出——而不是加码换合作。</div><div class="t-example">📌 算例：记 90 天的账——主动联系 58:7、解决问题 6:0、情绪安抚 11:1。折算每轮收益累计 ΣPayoff<sub>you</sub> ≈ −41 &lt; 0。负和博弈里继续加仓，只会扩大亏损。</div><div class="t-map">→ 参数 P｜关系长期收益度</div></div>
+      <div class="t-row"><div class="t-subj">信息论 · 信噪比与熵</div><div class="t-formula">SNR = Signal/Noise → 0；Entropy → ∞</div><div class="t-plain">可验证的行动是信号，话术承诺是噪音；噪音淹没行动时调低权重，反复无常按高熵处理。</div><div class="t-example">📌 算例：30 天里「我会/下次/以后」类语句 21 条（Noise），可验证的兑现行动 3 件（Signal）→ SNR ≈ 0.14 ≪ 1。回复间隔 {0.5h, 0.5h, 26h, 1h, 49h} → 高熵，不可预测。</div><div class="t-map">→ 参数 S｜行动信噪比 · H｜行为不确定性</div></div>
+      <div class="t-row"><div class="t-subj">综合 · 可靠度公式</div><div class="t-formula">R = (∫Action(t)dt / Noise) × (Connectivity / Entropy)</div><div class="t-plain">行动与连通越高越好，噪声与熵越高越差。本工具把它落地为上方六项参数的加权评分清单。</div><div class="t-example">📌 算例：A=45, T=35, C=30, P=55, S=30, H=70 → R = 11.25+8.75+4.5+8.25+3+3 = <b>38.75</b>，落入高风险区——触发「停止加码，进入观察期」。</div><div class="t-map">→ 最终输出 R｜关系可靠度</div></div>
     </div>
     <div class="t-rigor">⚠️ 严谨性声明：以上公式除贝叶斯定理、SNR 等基本形式外，多为启发式/修辞性表达，并非经过验证的心理学诊断工具。本工具不计算它们的精确数值，而是将其改造为「可验证问题清单」使用——请把它们当作观察框架，而不是判决书。</div>
   </details>
