@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>关系可靠性与发展决策模型</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d23; --sub:#6b7280; --line:#e5e7eb;
+    --accent:#3b5bdb; --accent-soft:#edf1fe;
+    --good:#2f9e44; --warn:#e8590c; --bad:#e03131; --mid:#f08c00;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"PingFang SC","Microsoft YaHei",-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;padding:24px 16px 80px}
+  .wrap{max-width:1080px;margin:0 auto}
+  header{text-align:center;margin-bottom:28px}
+  header h1{font-size:26px;letter-spacing:1px}
+  header p{color:var(--sub);font-size:13px;margin-top:6px}
+  .principle{display:inline-block;margin-top:10px;background:var(--accent-soft);color:var(--accent);font-size:13px;padding:6px 14px;border-radius:999px;font-weight:600}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .card h2{font-size:16px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .card h2 .num{background:var(--accent);color:#fff;width:22px;height:22px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex:none}
+  .meta-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .meta-row .field{flex:1;min-width:140px}
+  label.fl{display:block;font-size:12px;color:var(--sub);margin-bottom:4px}
+  input[type=text],select,textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink)}
+  textarea{resize:vertical;min-height:52px}
+  .slider-block{margin-bottom:16px}
+  .slider-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px}
+  .slider-head .name{font-weight:600;font-size:14px}
+  .slider-head .name small{color:var(--sub);font-weight:400;margin-left:6px;font-size:12px}
+  .slider-head .val{font-variant-numeric:tabular-nums;font-weight:700;font-size:16px;color:var(--accent)}
+  .slider-block .hint{font-size:11.5px;color:var(--sub);margin-bottom:4px}
+  input[type=range]{width:100%;accent-color:var(--accent);height:26px;cursor:pointer}
+  .val-wrap{display:flex;align-items:center;gap:8px}
+  .num-in{width:64px;border:1px solid var(--line);border-radius:8px;padding:4px 8px;font-size:15px;font-weight:700;text-align:center;color:var(--accent);font-variant-numeric:tabular-nums}
+  .num-in:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+  .ref-toggle{margin-top:4px;background:none;border:1px dashed var(--line);border-radius:8px;padding:5px 12px;font-size:12px;color:var(--sub);cursor:pointer;width:100%}
+  .ref-toggle:hover{border-color:var(--accent);color:var(--accent)}
+  .ref-panel{margin-top:8px;background:#f8f9fb;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .ref-q{display:flex;gap:8px;align-items:flex-start;font-size:13px;padding:5px 0;cursor:pointer}
+  .ref-q input{margin-top:3px;accent-color:var(--accent)}
+  .ref-result{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:13px;color:var(--sub)}
+  .ref-result b{color:var(--accent)}
+  .ref-apply{margin-left:8px;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:3px 12px;font-size:12px;cursor:pointer}
+  .ref-apply:hover{opacity:.85}
+  .val-tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px}
+  .calc{white-space:pre-line}
+  .ref-sec-title{font-size:12px;font-weight:700;color:var(--ink);margin:10px 0 6px}
+  .ref-sec-title:first-child{margin-top:0}
+  .anchor-row{font-size:12px;color:var(--sub);padding:4px 8px;border-left:3px solid var(--line);margin-bottom:4px;background:#fff;border-radius:0 6px 6px 0}
+  .ref-note{font-size:11.5px;color:var(--sub);margin-top:6px}
+  .flags label{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;padding:7px 0;border-bottom:1px dashed var(--line);cursor:pointer}
+  .flags label:last-child{border-bottom:none}
+  .flags input{margin-top:4px;accent-color:var(--bad)}
+  .flags .hard{color:var(--bad);font-weight:600}
+  /* results */
+  .r-hero{text-align:center;padding:8px 0 4px}
+  .r-num{font-size:56px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+  .r-num small{font-size:18px;color:var(--sub);font-weight:400}
+  .r-band{display:inline-block;margin-top:8px;padding:4px 14px;border-radius:999px;font-size:13px;font-weight:600;color:#fff}
+  .verdict{margin-top:14px;padding:12px 16px;border-radius:10px;font-size:16px;font-weight:700;text-align:center}
+  .v-a{background:#e7f5ea;color:var(--good)}
+  .v-b{background:#fff4e0;color:var(--mid)}
+  .v-c{background:#ffe9e0;color:var(--warn)}
+  .v-d{background:#fde8e8;color:var(--bad)}
+  .calc{font-size:12.5px;color:var(--sub);background:#f8f9fb;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:12px;font-family:"SF Mono",Consolas,monospace;word-break:break-all}
+  .bar-row{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13px}
+  .bar-row .lbl{width:110px;flex:none;color:var(--sub)}
+  .bar-row .track{flex:1;height:8px;background:#eef0f3;border-radius:99px;overflow:hidden}
+  .bar-row .fill{height:100%;border-radius:99px;transition:width .3s}
+  .bar-row .v{width:36px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+  .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .tag{font-size:12.5px;font-weight:600;padding:4px 12px;border-radius:999px}
+  .tag.red{background:#fde8e8;color:var(--bad)}
+  .tag.green{background:#e7f5ea;color:var(--good)}
+  .tag.ok{background:#eef0f3;color:var(--sub)}
+  .pill4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+  @media(max-width:560px){.pill4{grid-template-columns:repeat(2,1fr)}}
+  .pill{background:#f8f9fb;border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+  .pill .k{font-size:12px;color:var(--sub)}
+  .pill .lv{font-size:18px;font-weight:800;margin-top:2px}
+  .lv.hi{color:var(--good)} .lv.md{color:var(--mid)} .lv.lo{color:var(--bad)}
+  .support{margin-top:12px;padding:10px 14px;border-radius:10px;font-size:14px;font-weight:600;text-align:center}
+  .risk-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+  .risk-item:last-child{border-bottom:none}
+  .risk-item .rank{flex:none;width:26px;height:26px;border-radius:8px;background:#fde8e8;color:var(--bad);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px}
+  .risk-item .why{font-size:12.5px;color:var(--sub)}
+  .risk-item b{font-size:14px}
+  ul.plan{margin:8px 0 0 18px;font-size:14px}
+  ul.plan li{margin-bottom:6px}
+  .strategy-banner{padding:12px 16px;border-radius:10px;font-weight:700;font-size:15px;margin-bottom:10px}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:560px){.two-col{grid-template-columns:1fr}}
+  .mini{border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .mini h4{font-size:13px;margin-bottom:6px}
+  .mini.up h4{color:var(--good)} .mini.down h4{color:var(--bad)} .mini.hardx h4{color:#fff;background:var(--bad);margin:-12px -14px 8px;padding:8px 14px;border-radius:10px 10px 0 0}
+  .mini ul{margin-left:16px;font-size:13px}
+  .mini li{margin-bottom:4px}
+  .note{font-size:12px;color:var(--sub);margin-top:10px}
+  .empty{color:var(--sub);font-size:13px;font-style:italic}
+  button.print{display:block;margin:24px auto 0;padding:10px 28px;border:none;border-radius:10px;background:var(--accent);color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+  button.print:hover{opacity:.9}
+  @media print{.no-print{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>关系可靠性与发展决策模型</h1>
+    <p>基于客观参数的关系可靠度 · 诚信风险 · 长期价值评估工具</p>
+    <div class="principle">核心原则：行为证据 ＞ 语言解释 ＞ 主观感受</div>
+  </header>
+
+  <div class="grid">
+    <!-- ============ LEFT: INPUTS ============ -->
+    <div>
+      <div class="card">
+        <h2><span class="num">①</span>基本情况</h2>
+        <div class="meta-row">
+          <div class="field"><label class="fl">观察时间</label><input type="text" id="obsTime" placeholder="例如：认识3个月 / 恋爱6个月"></div>
+          <div class="field"><label class="fl">关系阶段</label>
+            <select id="stage">
+              <option>认识</option><option>暧昧</option><option selected>恋爱初期</option><option>稳定交往</option><option>其他</option>
+            </select>
+          </div>
+          <div class="field"><label class="fl">正在考虑的下一步</label><input type="text" id="nextStep" placeholder="例如：确定关系 / 同居 / 金钱往来"></div>
+        </div>
+        <div class="meta-row">
+          <div class="field"><label class="fl">已确认的重要正面事件</label><textarea id="posEvents" placeholder="没有可写「无」"></textarea></div>
+          <div class="field"><label class="fl">已确认的重要负面事件</label><textarea id="negEvents" placeholder="没有可写「无」"></textarea></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="num">②</span>六个核心参数（0–100）</h2>
+        <div id="sliders"></div>
+      </div>
+
+      <div class="card flags">
+        <h2><span class="num">③</span>硬性红旗（仅勾选「已确认事实」，怀疑不算）</h2>
+        <label><input type="checkbox" class="hardflag" data-k="重大撒谎"><span class="hard">确认存在重大撒谎</span></label>
+        <label><input type="checkbox" class="hardflag" data-k="隐瞒伴侣/婚姻"><span class="hard">隐瞒已有伴侣 / 婚姻</span></label>
+        <label><input type="checkbox" class="hardflag" data-k="长期双重关系"><span class="hard">长期双重关系</span></label>
+        <label><input type="checkbox" class="hardflag" data-k="金钱欺骗"><span class="hard">金钱欺骗</span></label>
+        <label><input type="checkbox" class="hardflag" data-k="身份造假"><span class="hard">身份造假</span></label>
+        <label><input type="checkbox" class="hardflag" data-k="持续性操控"><span class="hard">持续性操控</span></label>
+        <label><input type="checkbox" class="hardflag" data-k="威胁/暴力"><span class="hard">威胁、暴力</span></label>
+        <label><input type="checkbox" class="hardflag" data-k="侵犯明确边界"><span class="hard">侵犯明确边界</span></label>
+        <label><input type="checkbox" class="hardflag" data-k="反复利用重大事件欺骗"><span class="hard">反复利用重大事件欺骗</span></label>
+        <label><input type="checkbox" class="hardflag" data-k="系统性欺骗"><span class="hard">多次被证实的系统性欺骗</span></label>
+        <div class="note">⚠️ 勾选任何一项，模型将启动「硬性红旗优先原则」——不允许平均分稀释。</div>
+      </div>
+
+      <div class="card flags">
+        <h2><span class="num">④</span>假性高分线索（如符合请勾选）</h2>
+        <label><input type="checkbox" class="fakeflag" data-k="前期行动多、后期大幅下降"><span>前期行动很多 → 后期大幅下降</span></label>
+        <label><input type="checkbox" class="fakeflag" data-k="嘴上投入多、实际行动少"><span>嘴上投入很多 → 实际行动很少</span></label>
+        <label><input type="checkbox" class="fakeflag" data-k="对我很好但现实身份长期隐藏"><span>对我很好 → 但身份和现实生活长期隐藏</span></label>
+        <label><input type="checkbox" class="fakeflag" data-k="感情浓度高但诚信低"><span>感情浓度高 → 但诚信低</span></label>
+        <label><input type="checkbox" class="fakeflag" data-k="偶尔做好事掩盖长期负面模式"><span>偶尔做非常好的事 → 掩盖长期负面模式</span></label>
+        <label><input type="checkbox" class="fakeflag" data-k="严重负面事件后短期补偿"><span>严重负面事件 → 后续短期补偿制造高分</span></label>
+      </div>
+    </div>
+
+    <!-- ============ RIGHT: RESULTS ============ -->
+    <div>
+      <div class="card">
+        <h2><span class="num">❶</span>一句话结论 & 关系可靠度</h2>
+        <div class="r-hero">
+          <div class="r-num" id="rNum">--<small> / 100</small></div>
+          <div><span class="r-band" id="rBand" style="background:#adb5bd">等待输入</span></div>
+          <div class="verdict v-c" id="verdict" style="display:none"></div>
+          <div class="calc" id="calc"></div>
+        </div>
+        <div id="bars" style="margin-top:14px"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="num">❷</span>结构性风险检查</h2>
+        <div class="tags" id="structTags"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="num">❸</span>人品 / 诚信单独判断</h2>
+        <div class="pill4">
+          <div class="pill"><div class="k">诚信（T）</div><div class="lv" id="jT">-</div></div>
+          <div class="pill"><div class="k">责任感（A）</div><div class="lv" id="jA">-</div></div>
+          <div class="pill"><div class="k">一致性（S）</div><div class="lv" id="jS">-</div></div>
+          <div class="pill"><div class="k">互惠性（P）</div><div class="lv" id="jP">-</div></div>
+        </div>
+        <div class="support" id="support"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="num">❹</span>最危险的三个指标</h2>
+        <div id="topRisks"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="num">❺</span>假性高分检查</h2>
+        <div id="fakeCheck"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="num">❻</span>行动方案（四选一战略）</h2>
+        <div class="strategy-banner" id="strategyBanner"></div>
+        <div id="strategyBody"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="num">❼</span>下一阶段验证任务（正常真实互动，不试探不钓鱼）</h2>
+        <ul class="plan" id="verifyTasks"></ul>
+      </div>
+
+      <div class="card">
+        <h2><span class="num">❽</span>什么证据可以改变结论</h2>
+        <div class="two-col">
+          <div class="mini up"><h4>▲ 出现以下证据，提高判断</h4><ul id="upList"></ul></div>
+          <div class="mini down"><h4>▼ 出现以下证据，降低判断</h4><ul id="downList"></ul></div>
+        </div>
+        <div class="mini hardx" style="margin-top:14px"><h4>⛔ 出现以下任何一项，重新评估是否继续</h4><ul id="hardList"></ul></div>
+      </div>
+    </div>
+  </div>
+  <button class="print no-print" onclick="window.print()">打印 / 导出 PDF 报告</button>
+</div>
+
+<script>
+const PARAMS = [
+  {id:'A', name:'A｜长期行动持续度', hint:'说过的事情是否长期真的做到。', def:50,
+   bands:['90–100 长期稳定兑现，主动投入，前后一致','70–89 大部分能做到，偶尔存在波动','50–69 行为时好时坏，承诺兑现一般','30–49 前期投入较高随后明显下降，经常需要催促','0–29 大量承诺没有行动，长期靠语言维系关系'],
+   qs:['过去30天，对方的明确承诺兑现率 ≥ 2/3','对方的投入是主动发生的，不需要你反复催促','与关系早期相比，对方的行动投入没有明显下降','在"重要但不方便"的事上（非顺手小事）对方也兑现过','对方答应的事有具体时间和具体结果，而非无限拖延']},
+  {id:'T', name:'T｜证据更新后的信任度', hint:'已有证据（而非意愿）支持相信他的程度。', def:50,
+   bands:['90–100 重要信息基本可验证，没有发现明显欺骗','70–89 总体可信，有少量解释不清的问题','50–69 已出现一些矛盾、隐瞒或无法验证的信息','30–49 多次前后矛盾、撒谎、刻意隐瞒','0–29 重大欺骗事实，或核心身份/关系事实不真实'],
+   qs:['对方的关键信息（身份/工作/关系状态）可被第三方验证','过去60天没有发现前后矛盾的说法','不利信息是对方主动告知的，而不是被你发现的','对方不存在至今无法验证的重要说法','发生分歧时，对方承认事实而不是改口或反咬']},
+  {id:'C', name:'C｜现实连接度', hint:'是否逐渐进入他的真实生活。', def:50,
+   bands:['90–100 双方现实世界高度连接，身份和关系明确','70–89 已进入主要生活圈，仍有少量区域未连接','50–69 知道部分真实生活，但仍存在明显隔离','30–49 长期只存在于私人空间，现实接触非常有限','0–29 长期隐藏、隔离，真实生活几乎无法验证'],
+   qs:['你见过对方至少一位真实朋友/同事/家人（线下或视频）','对方主动安排过你进入其真实生活场景','你清楚对方的基本生活轨迹（工作地/居住地/日常作息）','对方谈及未来规划时自然包含你','你们的关系在对方的现实世界里不是秘密']},
+  {id:'P', name:'P｜关系长期收益度', hint:'这段关系是否总体互惠（不是算钱）。', def:50,
+   bands:['90–100 明显互相支持，双方都获得正向价值','70–89 整体比较对等','50–69 有一定失衡，但尚未形成长期单向','30–49 明显由一方承担更多成本','0–29 长期单向付出、被消耗、被利用或承担大量负面结果'],
+   qs:['你需要支持的具体时刻，对方实际到场或解决了问题','双方的时间/精力投入大致对等，不是长期单向','对方尊重你的边界，能接受你说"不"','涉及双方利益的决定，对方会考虑你的成本','这段关系总体让你更有能量，而不是长期被消耗']},
+  {id:'S', name:'S｜行动信噪比', hint:'可信信息有多少来自行动而非语言。', def:50,
+   bands:['90–100 基本用行动说话','70–89 说和做总体一致','50–69 语言明显多于行动','30–49 经常解释、承诺、画饼，但兑现有限','0–29 几乎全部依靠话术、理由、承诺维持关系'],
+   qs:['对方的重要信息主要通过行动传达，而不是口头描述','对方"说"和"做"基本一致','对方很少需要为自己的行为做长篇解释','对方承诺的数量少于（或等于）兑现的数量','出现问题时，对方先用行动解决，再解释']},
+  {id:'H', name:'H｜行为不确定性（越高越危险）', hint:'行为是否反复、混乱、无法预测。', def:30, invert:true,
+   bands:['0–20 非常稳定','21–40 偶尔波动，但大体能够解释','41–60 明显存在反复','61–80 经常冷热交替、突然失联、态度剧变','81–100 行为高度随机，关系长期不可预测'],
+   qs:['对方的联系频率和节奏稳定、可预测','对方没有无故的冷热交替或态度剧变','过去60天没有发生过突然失联','对方的情绪波动有可解释的现实原因','你大致能预测对方对常见事情的反应']},
+];
+const REFS = {}; // pid -> 证据参考值
+
+const slidersEl = document.getElementById('sliders');
+PARAMS.forEach(p=>{
+  const div = document.createElement('div');
+  div.className='slider-block';
+  div.innerHTML = `
+    <div class="slider-head">
+      <span class="name">${p.name}</span>
+      <span class="val-wrap"><input type="number" class="num-in" min="0" max="100" value="${p.def}" id="num-${p.id}"><span class="val" id="val-${p.id}"></span></span>
+    </div>
+    <div class="hint">${p.hint}</div>
+    <input type="range" min="0" max="100" value="${p.def}" id="in-${p.id}">
+    <button type="button" class="ref-toggle" id="reftoggle-${p.id}">📋 打分依据：证据问答 + 档位锚点</button>
+    <div class="ref-panel" id="ref-${p.id}" style="display:none">
+      <div class="ref-sec-title">第 1 步｜对照档位锚点（你的分数必须能对应到其中一档的具体描述）</div>
+      ${p.bands.map(b=>`<div class="anchor-row">${b}</div>`).join('')}
+      <div class="ref-sec-title">第 2 步｜回答证据问题，生成参考值（每题 20 分）</div>
+      ${p.qs.map((q,i)=>`<label class="ref-q"><input type="checkbox" class="ref-cb" data-p="${p.id}" data-i="${i}"><span>${q}</span></label>`).join('')}
+      <div class="ref-result" id="refres-${p.id}"></div>
+    </div>`;
+  slidersEl.appendChild(div);
+
+  const range = div.querySelector('#in-'+p.id);
+  const numIn = div.querySelector('#num-'+p.id);
+  range.addEventListener('input', ()=>{ numIn.value = range.value; compute(); });
+  numIn.addEventListener('input', ()=>{
+    let v = Math.max(0, Math.min(100, Math.round(+numIn.value||0)));
+    range.value = v; compute();
+  });
+  div.querySelector('#reftoggle-'+p.id).addEventListener('click', ()=>{
+    const panel = $('ref-'+p.id);
+    panel.style.display = panel.style.display==='none' ? 'block' : 'none';
+  });
+  div.querySelectorAll('.ref-cb').forEach(cb=>cb.addEventListener('change', ()=>{
+    const n = [...div.querySelectorAll('.ref-cb')].filter(c=>c.checked).length;
+    let ref = n*20;                    // 每题20分
+    if(p.invert) ref = 100-ref;        // H 反向：勾的是"稳定事实"
+    if(n>0) REFS[p.id]=ref; else delete REFS[p.id];
+    const res = $('refres-'+p.id);
+    res.innerHTML = n>0
+      ? `已确认 <b>${n}/5</b> 项证据 → <b>参考值：${ref}</b> <button type="button" class="ref-apply" data-ref="${ref}">采用参考值</button><div class="ref-note">参考值是"证据底线"：你的最终输入若偏离它 ±15 分以上，结果区会发出偏差警报。</div>`
+      : '尚未确认任何证据。如果你一项都勾不了，这本身就是信息。';
+    const applyBtn = res.querySelector('.ref-apply');
+    if(applyBtn) applyBtn.addEventListener('click', ()=>{
+      range.value = ref; numIn.value = ref; compute();
+    });
+    compute();
+  }));
+});
+document.querySelectorAll('.hardflag,.fakeflag').forEach(cb=>cb.addEventListener('change', compute));
+
+const $ = id=>document.getElementById(id);
+const val = id=>+$('in-'+id).value;
+
+function band(r){
+  if(r>=80) return ['高可靠表现','#2f9e44'];
+  if(r>=65) return ['相对可靠，可以继续验证','#74b816'];
+  if(r>=50) return ['不确定区，不适合明显增加投入','#f08c00'];
+  if(r>=35) return ['高风险区','#e8590c'];
+  return ['严重风险区','#e03131'];
+}
+function lvl(v){ return v>=70?['高','hi']:v>=40?['中','md']:['低','lo']; }
+function riskOf(id,v){ return id==='H'? v : 100-v; }
+
+const WHY = {
+  A:'行动是关系最底层的抵押品。长期行动不足意味着所有承诺都没有兑现保障，未来投入越大损失越大。',
+  T:'信任是亲密关系的承重墙。证据不支持信任时，其他一切优点都建立在不可验证的沙地上。',
+  C:'现实连接度低说明你接触的可能只是对方想让你看到的部分，无法验证的关系无法承担重大决策。',
+  P:'长期单向付出会形成消耗结构，时间越久越难退出，且失衡本身会吸引更不平等的对待。',
+  S:'语言噪音过高意味着对方用解释替代兑现，你收到的"信息"大多不可信，判断基础被污染。',
+  H:'高不确定性让关系长期处于应激状态，你无法做任何稳定规划，情绪成本会持续放大。'
+};
+
+function compute(){
+  const A=val('A'),T=val('T'),C=val('C'),P=val('P'),S=val('S'),H=val('H');
+  PARAMS.forEach(p=>{
+    const v = val(p.id), el = $('val-'+p.id);
+    let tag, bg, fg;
+    if(p.invert){
+      if(v>60){tag='高度不可预测';bg='#fde8e8';fg='#e03131';}
+      else if(v>40){tag='明显反复';bg='#ffe9e0';fg='#e8590c';}
+      else if(v>20){tag='偶有波动';bg='#fff4e0';fg='#f08c00';}
+      else{tag='稳定';bg='#e7f5ea';fg='#2f9e44';}
+    } else {
+      if(v<40){tag='高风险';bg='#fde8e8';fg='#e03131';}
+      else if(v<55){tag='偏低';bg='#ffe9e0';fg='#e8590c';}
+      else if(v<70){tag='一般';bg='#fff4e0';fg='#f08c00';}
+      else{tag='良好';bg='#e7f5ea';fg='#2f9e44';}
+    }
+    let html = `<span class="val-tag" style="background:${bg};color:${fg}">${tag}</span>`;
+    if(REFS[p.id]!==undefined){
+      const diff = v - REFS[p.id];
+      const effDiff = p.invert ? -diff : diff; // 统一成"比证据更乐观"的方向
+      if(Math.abs(diff)>=15){
+        html += `<span class="val-tag" style="background:#fde8e8;color:#e03131">偏差${effDiff>0?'+':''}${p.invert?-diff:diff} vs 证据</span>`;
+      } else {
+        html += `<span class="val-tag" style="background:#eef0f3;color:#6b7280">≈证据参考</span>`;
+      }
+    }
+    el.innerHTML = html;
+  });
+
+  const R = 0.25*A + 0.25*T + 0.15*C + 0.15*P + 0.10*S + 0.10*(100-H);
+  const r = Math.round(R*10)/10;
+
+  // ① R & band
+  $('rNum').innerHTML = r + '<small> / 100</small>';
+  const [bandTxt,bandColor] = band(r);
+  $('rBand').textContent = bandTxt;
+  $('rBand').style.background = bandColor;
+  let calcTxt = `R = 0.25×${A} + 0.25×${T} + 0.15×${C} + 0.15×${P} + 0.10×${S} + 0.10×(100−${H}) = ${(0.25*A).toFixed(1)} + ${(0.25*T).toFixed(1)} + ${(0.15*C).toFixed(1)} + ${(0.15*P).toFixed(1)} + ${(0.10*S).toFixed(1)} + ${(0.10*(100-H)).toFixed(1)} = ${r}`;
+  // 证据版 R：用证据参考值替换已作答的参数，对比你的输入版
+  const refKeys = Object.keys(REFS);
+  if(refKeys.length>0){
+    const g = id => REFS[id]!==undefined ? REFS[id] : val(id);
+    const rRef = Math.round((0.25*g('A')+0.25*g('T')+0.15*g('C')+0.15*g('P')+0.10*g('S')+0.10*(100-g('H')))*10)/10;
+    const drift = Math.round((r - rRef)*10)/10;
+    calcTxt += `\n证据参考 R = ${rRef}（已替换 ${refKeys.length}/6 项为证据值）`;
+    if(Math.abs(drift)>=5) calcTxt += ` ⚠️ 你的输入整体比证据${drift>0?'乐观':'悲观'} ${Math.abs(drift)} 分`;
+    else calcTxt += ` ✅ 你的输入与证据基本一致`;
+  }
+  $('calc').textContent = calcTxt;
+
+  // bars
+  const barsData = [['A 行动',A],['T 信任',T],['C 连接',C],['P 收益',P],['S 信噪比',S],['H 不确定性',H]];
+  $('bars').innerHTML = barsData.map(([k,v])=>{
+    const danger = k.startsWith('H') ? v>60 : v<40;
+    const warn = k.startsWith('H') ? v>40 : v<55;
+    const color = danger?'#e03131':warn?'#f08c00':'#3b5bdb';
+    return `<div class="bar-row"><span class="lbl">${k}</span><div class="track"><div class="fill" style="width:${v}%;background:${color}"></div></div><span class="v">${v}</span></div>`;
+  }).join('');
+
+  // ② structural tags
+  const hardChecked = [...document.querySelectorAll('.hardflag:checked')].map(e=>e.dataset.k);
+  const tags = [];
+  if(hardChecked.length) tags.push(['⛔ 硬性红旗：'+hardChecked.join('、'),'red']);
+  if(T<40) tags.push(['诚信高风险（T<40）','red']); else tags.push(['诚信阈值通过','green']);
+  if(A<40) tags.push(['行动可靠性高风险（A<40）','red']); else tags.push(['行动阈值通过','green']);
+  if(T<40&&A<40) tags.push(['T与A双低：即使R>50也不可快速发展','red']);
+  if(C<40) tags.push(['现实隔离风险（C<40）','red']);
+  if(P<40) tags.push(['关系失衡风险（P<40）','red']);
+  if(S<40) tags.push(['语言噪音过高（S<40）','red']);
+  if(H>60) tags.push(['行为高不确定性（H>60）','red']);
+  $('structTags').innerHTML = tags.map(([t,c])=>`<span class="tag ${c}">${t}</span>`).join('');
+
+  // ③ character judgement
+  [['jT',T],['jA',A],['jS',S],['jP',P]].forEach(([id,v])=>{
+    const [t,c]=lvl(v); const el=$(id); el.textContent=t; el.className='lv '+c;
+  });
+  const sup = $('support');
+  const highCount = [T,A,S,P].filter(v=>v>=70).length;
+  if(hardChecked.length || T<40){
+    sup.textContent = '明显不支持：目前没有足够证据支持「这是一个值得建立高信任的人」。';
+    sup.style.background='#fde8e8'; sup.style.color='#e03131';
+  } else if(highCount>=3 && T>=70){
+    sup.textContent = '支持：现有证据支持「这是一个在亲密关系中值得建立高信任的人」。';
+    sup.style.background='#e7f5ea'; sup.style.color='#2f9e44';
+  } else {
+    sup.textContent = '暂不支持：证据尚不充分，需要更多时间和可验证事件。';
+    sup.style.background='#fff4e0'; sup.style.color='#f08c00';
+  }
+
+  // ④ top-3 risks
+  const risks = PARAMS.map(p=>({id:p.id, name:p.name.split('｜')[0], full:p.name, v:val(p.id), risk:riskOf(p.id,val(p.id))}))
+    .sort((a,b)=>b.risk-a.risk).slice(0,3);
+  $('topRisks').innerHTML = risks.map((x,i)=>`
+    <div class="risk-item"><div class="rank">${i+1}</div>
+    <div><b>第${['一','二','三'][i]}风险：${x.full}（${x.v}分）</b>
+    <div class="why">${WHY[x.id]}</div></div></div>`).join('');
+
+  // ⑤ fake-high check (auto-detect + manual)
+  const fakeAuto = [];
+  if(A>=70 && S<50) fakeAuto.push('参数矛盾：行动分高但信噪比低——"行动"可能主要来自语言承诺而非可验证行为。');
+  if(P>=70 && C<50) fakeAuto.push('参数矛盾：对你很好但现实连接长期缺失——"好"无法在现实世界中验证。');
+  if(T<50 && (A>=70||P>=70)) fakeAuto.push('参数矛盾：感情/投入浓度高但诚信证据不足——高分可能被情绪浓度虚高。');
+  if(A-S>=30) fakeAuto.push(`A−S 差距 ${A-S} 分：自评行动明显多于"用行动说话"的比例，警惕语言灌水。`);
+  const fakeManual = [...document.querySelectorAll('.fakeflag:checked')].map(e=>e.dataset.k);
+  let fakeHtml = '';
+  if(fakeAuto.length||fakeManual.length){
+    fakeHtml = '<ul class="plan">' +
+      fakeAuto.map(t=>`<li><b>模型自动检测：</b>${t}</li>`).join('') +
+      fakeManual.map(t=>`<li><b>已确认线索：</b>${t}</li>`).join('') + '</ul>' +
+      `<div class="note" style="color:#e8590c"><b>结论：总分 R 可能被上述因素虚高，解读时应下调一档看待。</b></div>`;
+  } else {
+    fakeHtml = '<div class="empty">未发现明显假性高分信号（参数间逻辑基本一致，也未勾选手动线索）。</div>';
+  }
+  $('fakeCheck').innerHTML = fakeHtml;
+
+  // ① verdict & ⑥ strategy
+  let verdict, vClass, strategy, sColor, sBody;
+  const coreBroken = hardChecked.length>0 || T<30;
+  if(coreBroken || r<35){
+    verdict = coreBroken ? '核心信任已经破坏，不建议继续' : '明显高风险，建议暂停发展';
+    vClass='v-d'; strategy='D｜停止发展'; sColor='#e03131';
+    const reason = hardChecked.length
+      ? `已确认硬性红旗：${hardChecked.join('、')}。这属于足以改变整个关系决策的事实，不能被任何平均分稀释。`
+      : (T<30 ? `信任度 T=${T}，核心信任已被证据破坏，继续投入只会在错误方向上加码。`
+              : `综合可靠度 R=${r} 处于严重风险区，多个维度同时失效。`);
+    sBody = `<ul class="plan">
+      <li><b>停止发展的核心原因：</b>${reason}</li>
+      <li>不做重大投入：不发生金钱往来、不同居、不见家长、不做长期承诺。</li>
+      <li>逐步降低情感与生活交集，把精力回撤到自己的生活结构。</li>
+      <li>不用「再给一次机会」自行降低判断标准——标准只随新证据变化，不随情绪变化。</li>
+    </ul>`;
+  } else if(r<65 || (T<40&&A<40)){
+    verdict = '继续观察，不应该增加投入';
+    vClass='v-c'; strategy='C｜停止升级，进入观察期'; sColor='#e8590c';
+    const weak = risks.map(x=>x.full.split('｜')[0]).join('、');
+    sBody = `<ul class="plan">
+      <li><b>未来30天不应该做：</b>不升级关系（不确定关系/不同居/无金钱往来）、不扩大沉没成本、不因对方短期示好提前加码。</li>
+      <li><b>应该观察什么：</b>重点盯 ${weak} 三项指标的真实变化，只记录行为，不记录解释。</li>
+      <li><b>什么证据会提高评分：</b>承诺按期兑现、主动让你进入其真实生活圈、矛盾信息被可验证地澄清。</li>
+      <li><b>什么证据会降低评分：</b>再次出现无法验证的说法、冷热交替复发、对关键问题回避或反咬。</li>
+    </ul>`;
+  } else if(r<75){
+    verdict = '可以发展，但应该控制速度';
+    vClass='v-b'; strategy='B｜减速发展'; sColor='#f08c00';
+    sBody = `<ul class="plan">
+      <li><b>暂时不要增加的投入：</b>金钱绑定、同居、排他性重大承诺、向对方社交圈深度让渡。</li>
+      <li><b>重点验证三个问题：</b>① ${risks[0].full}能否回到安全线以上；② ${risks[1].full}是否改善；③ 当前阶段应有的现实连接是否在自然增加。</li>
+      <li>保持现有节奏，用时间换证据，不用投入换安心。</li>
+    </ul>`;
+  } else {
+    verdict = '值得继续发展';
+    vClass='v-a'; strategy='A｜继续发展'; sColor='#2f9e44';
+    const step = $('nextStep').value.trim();
+    sBody = `<ul class="plan">
+      <li>整体可靠、核心诚信无明显问题、无严重结构性风险。</li>
+      <li><b>下一阶段可以增加的投入：</b>${step?('按你计划的「'+step+'」稳步推进，'):''}加深现实连接（社交圈、家庭、长期规划），逐步提高承诺等级。</li>
+      <li>仍保持记录习惯：高分不是免检牌，持续验证才能维持高分。</li>
+    </ul>`;
+  }
+  const vd = $('verdict'); vd.style.display='block'; vd.className='verdict '+vClass; vd.textContent='结论：'+verdict;
+  const sb = $('strategyBanner'); sb.textContent='选定战略：'+strategy; sb.style.background=sColor+'1a'; sb.style.color=sColor;
+  $('strategyBody').innerHTML = sBody;
+
+  // ⑦ verification tasks (based on weakest metrics)
+  const tasks = [];
+  risks.forEach(x=>{
+    if(x.id==='A') tasks.push('未来30天，记录对方3次明确承诺（具体时间+具体事项）的到期兑现情况，只记结果不记理由。');
+    if(x.id==='T') tasks.push('未来30天，针对1–2个目前解释不清的关键信息，在正常对话中请对方提供可验证的细节，观察其反应是坦然还是回避/愤怒。');
+    if(x.id==='C') tasks.push('未来60天，观察对方是否主动安排你进入其一个真实生活场景（朋友聚会/工作环境/家庭提及），记录是否自然发生而非你推动。');
+    if(x.id==='P') tasks.push('未来30天，记录双方在一次你需要支持的具体事件中的投入对比（时间、精力、解决方案），评估是否仍然单向。');
+    if(x.id==='S') tasks.push('未来30天，对对方说的3件"我会……"类陈述做清单，30天后核对兑现率是否超过2/3。');
+    if(x.id==='H') tasks.push('未来30天，记录对方情绪/态度/联系频率的波动次数与诱因，判断波动是否有可解释的现实原因。');
+  });
+  while(tasks.length<3) tasks.push('未来30天，安排一次涉及双方协调成本的正常事项（如共同出行/共同完成任务），观察其责任承担与配合度。');
+  $('verifyTasks').innerHTML = tasks.slice(0,3).map(t=>`<li>${t}</li>`).join('');
+
+  // ⑧ evidence lists
+  $('upList').innerHTML = [
+    '重要承诺在约定时间内被兑现，且无需你提醒（直接提升 A、S）。',
+    '对方主动开放新的现实生活区域给你认识，身份与关系信息可被第三方验证（提升 C、T）。',
+    '发生分歧时，对方用解决问题代替解释和安抚，且后续行为与说法一致（提升 T、P）。'
+  ].map(t=>`<li>${t}</li>`).join('');
+  $('downList').innerHTML = [
+    '再次出现前后矛盾且无法验证的说法，或对已确认事实改口（降低 T）。',
+    '承诺兑现率持续低于一半，且理由数量多于行动数量（降低 A、S）。',
+    '出现突然的冷热交替、失联、态度剧变且无可验证的现实原因（升高 H）。'
+  ].map(t=>`<li>${t}</li>`).join('');
+  $('hardList').innerHTML = [
+    '任何一项硬性红旗被证据确认（重大撒谎、隐瞒伴侣/婚姻、金钱欺骗、身份造假、操控、威胁暴力、系统性欺骗等）。',
+    '信任度 T 跌破 30，或 T 与 A 同时跌破 40 且无修复证据。',
+    '连续两个观察周期（60天）核心指标无改善，且关系成本持续单向增加。'
+  ].map(t=>`<li>${t}</li>`).join('');
+}
+compute();
+</script>
+</body>
+</html>
